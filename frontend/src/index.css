@@ -5,3 +5,10 @@ body {
   max-width: 38rem;
   padding: 2rem;
 }
+
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+}
