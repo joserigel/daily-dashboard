@@ -1,6 +1,9 @@
+import { Navbar } from "../layout/Navbar";
+import "./app.css"
+
 const Index = () => {
-    return (<main className="main">
-        test
+    return (<main>
+        <Navbar/>
     </main>)
 }
 

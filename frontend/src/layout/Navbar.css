@@ -1,0 +1,21 @@
+nav {
+    display: flex;
+    flex-direction: row;
+    background-color: darkgray;
+    height: 2em;
+    width: 100%;
+}
+
+.nav-button {
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.nav-button:hover {
+    background-color: gray;
+}
+
+.nav-button:active {
+    background-color: #535353;
+}
