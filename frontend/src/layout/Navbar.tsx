@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import "./Navbar.css";
 
 
@@ -7,8 +8,9 @@ interface NavButtonProps {
 }
 
 const NavButton = ({text, to}: NavButtonProps) => {
+    const navigate = useNavigate();
     return (
-        <button className="nav-button">
+        <button className="nav-button" onClick={() => navigate(to)}>
             { text }
         </button>
     )
@@ -16,7 +18,7 @@ const NavButton = ({text, to}: NavButtonProps) => {
 
 export const Navbar = () => {
     return (<nav>
-        <NavButton text="Home" to=""/>
-        <NavButton text="Preferences" to=""/>
+        <NavButton text="Home" to="/"/>
+        <NavButton text="Preferences" to="/preferences"/>
     </nav>)
 }

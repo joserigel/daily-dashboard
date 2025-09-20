@@ -1,19 +1,20 @@
 nav {
     display: flex;
     flex-direction: row;
-    background-color: darkgray;
+    background-color: #474747;
     height: 2em;
     width: 100%;
 }
 
 .nav-button {
     background-color: transparent;
+    color: white;
     outline: none;
     border: none;
 }
 
 .nav-button:hover {
-    background-color: gray;
+    background-color: #616161;
 }
 
 .nav-button:active {
