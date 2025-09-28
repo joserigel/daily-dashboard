@@ -3,6 +3,8 @@ node_modules
 
 # Backend
 target
+*.db
+*.dbjournal
 
 # VSCode
 .vscode

@@ -1,4 +1,4 @@
-package dailydashboard.Enums;
+package dailydashboard.Models;
 
 public enum MensaLocation {
     ACADEMICA("academica", "https://www.studierendenwerk-aachen.de/speiseplaene/academica-w-en.html"),

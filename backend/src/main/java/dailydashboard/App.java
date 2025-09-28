@@ -1,13 +1,41 @@
 package dailydashboard;
 
+
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import dailydashboard.Database.SQL;
+import dailydashboard.Models.Expense;
+import jakarta.annotation.PreDestroy;
 
 @SpringBootApplication
 public class App 
 {
+    static Logger logger = LoggerFactory.getLogger(App.class);
+
     public static void main( String[] args )
     {
-        SpringApplication.run(App.class, args);
+        try {
+            SQL.init();
+            Expense exp = new Expense(100, "test", Optional.empty());
+            exp.insert();
+            SpringApplication.run(App.class, args);
+        } catch(Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    @PreDestroy
+    public static void destroy() {
+        try {
+            SQL.closeConnection();
+            logger.info("Closed SQL Connection");
+        } catch(Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }
