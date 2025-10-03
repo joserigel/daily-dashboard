@@ -59,6 +59,15 @@ public class Expense {
         ")");
     }
 
+    public static int deleteById(int id) throws SQLException {
+        Connection conn = SQL.getConnection();
+        PreparedStatement query = conn.prepareStatement("DELETE FROM expenses WHERE id = ?");
+        query.setInt(1, id);
+
+        int res = query.executeUpdate();
+        return res;
+    }
+
     public static ArrayList<Expense> getExpenses(int page, int size) throws Exception {
         int offset = page * size;
         

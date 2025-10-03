@@ -21,8 +21,6 @@ public class App
     {
         try {
             SQL.init();
-            Expense exp = new Expense(100, "test", Optional.empty());
-            exp.insert();
             SpringApplication.run(App.class, args);
         } catch(Exception e) {
             logger.error(e.getMessage());

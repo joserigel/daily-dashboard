@@ -1,22 +1,19 @@
 package dailydashboard.Controllers;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
-import org.json.simple.JSONObject;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.jsoup.Jsoup;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import dailydashboard.Models.Expense;
-import dailydashboard.Models.MensaLocation;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class ExpenseController {
@@ -24,14 +21,25 @@ public class ExpenseController {
 
     @SuppressWarnings("unchecked")
     @GetMapping(path = "/expenses")
-    public @ResponseBody JSONAware expenses(@RequestParam("page") int page, @RequestParam("size") int size) throws Exception {
-            ArrayList<Expense> expenses = Expense.getExpenses(page, size);
-            JSONArray array = new JSONArray();
-            
-            for (Expense expense: expenses) {
-                array.add(expense.asJSON());
-            }
+    public @ResponseBody JSONAware getExpenses(@RequestParam("page") int page, @RequestParam("size") int size) throws Exception {
+        ArrayList<Expense> expenses = Expense.getExpenses(page, size);
+        JSONArray array = new JSONArray();
+        
+        for (Expense expense: expenses) {
+            array.add(expense.asJSON());
+        }
 
-            return array;
+        return array;
+    }
+
+    @DeleteMapping(path = "/expense/{id}")
+    @ResponseBody
+    public void deleteExpense(@PathVariable("id") int id, HttpServletResponse response) throws SQLException {
+        int res = Expense.deleteById(id);
+        if (res > 0) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 }
