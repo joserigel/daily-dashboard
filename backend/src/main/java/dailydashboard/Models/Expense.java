@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
@@ -15,22 +16,23 @@ import dailydashboard.Database.SQL;
 
 public class Expense {
     private Optional<Integer> id;
-    private int amount;
+    private long amount;
     private String category;
     private Optional<String> description;
     private Optional<Timestamp> createdAt;
     private Optional<Timestamp> modifiedAt;
 
-    private Expense(int id, int amount, String category, Optional<String> description, 
+    private Expense(int id, long amount, String category, Optional<String> description, 
         Timestamp createdAt, Timestamp modifiedAt) {
         this.id = Optional.of(id);
+        this.amount = amount;
         this.category = category;
         this.createdAt = Optional.of(createdAt);
         this.description = description;
         this.modifiedAt = Optional.of(modifiedAt);
     }
 
-    public Expense(int amount, String category, Optional<String> description) throws Exception {
+    public Expense(long amount, String category, Optional<String> description) throws Exception {
         if (category.length() > 255) {
             throw new Exception("category cannot exceed a length of 255!");
         }
@@ -68,6 +70,27 @@ public class Expense {
         return res;
     }
 
+    public static HashMap<String, Long> getPerCategory(Timestamp start, Timestamp end) throws SQLException {
+        Connection conn = SQL.getConnection();
+        PreparedStatement query = conn.prepareStatement(
+            "SELECT category, SUM(amount) AS amount FROM expenses " +
+            "WHERE DATE(created_at) BETWEEN DATE(?) AND DATE(?) " +
+            "GROUP BY category" 
+        );
+        query.setString(1, start.toString());
+        query.setString(2, end.toString());
+
+        ResultSet rs = query.executeQuery();
+        HashMap<String, Long> result = new HashMap<String, Long>();
+        while (rs.next()) {
+            String category = rs.getString("category");
+            long amount = rs.getLong("amount");
+            result.put(category, amount);
+        }
+        
+        return result;
+    }
+
     public static ArrayList<Expense> getExpenses(int page, int size) throws Exception {
         int offset = page * size;
         
@@ -84,7 +107,7 @@ public class Expense {
         ArrayList<Expense> paginatedExpenses = new ArrayList<Expense>();
         while (rs.next()) {
             int id = rs.getInt("id");
-            int amount = rs.getInt("amount");
+            long amount = rs.getLong("amount");
             String category = rs.getString("category");
             String description = rs.getString("description");
             Timestamp createdAt = rs.getTimestamp("created_at");
@@ -119,7 +142,7 @@ public class Expense {
 
         if (rs.next()) {
             this.id = Optional.of(rs.getInt("id"));
-            this.amount = rs.getInt("amount");
+            this.amount = rs.getLong("amount");
             this.category = rs.getString("category");
 
             String description = rs.getString("description");
