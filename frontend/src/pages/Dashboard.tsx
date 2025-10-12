@@ -2,10 +2,14 @@ import { PieChart } from "../layout/PieChart"
 
 const Dashboard = () => {
     const values = new Map([
-        ["test", 30]
+        ["groceries", 30],
+        ["food", 500],
+        ["bob", 30],
+        ["bloob", 30],
+        ["bleeb", 50]
     ])
     return (
-        <PieChart sectors={values}/>
+        <PieChart sectors={values} radius={150}/>
     )
 }
 
