@@ -1,4 +1,4 @@
-import { PieChart } from "../layout/PieChart"
+import { PieChart } from "../components/PieChart"
 
 const Dashboard = () => {
     const values = new Map([

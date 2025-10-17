@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./PieChart.css";
 
 interface PieChartProps extends React.SVGProps<SVGSVGElement> {
@@ -8,19 +9,19 @@ interface PieChartProps extends React.SVGProps<SVGSVGElement> {
 interface CircleSectorProps extends React.SVGProps<SVGPathElement> {
     radius: number;
     offset: number;
-    degree: number;
+    angle: number;
 }
 
-const CircleSector = ({radius, offset, degree, ...rest}: CircleSectorProps) => {
+const CircleSector = ({radius, offset, angle, ...rest}: CircleSectorProps) => {
     const start = {
         x: Math.cos(offset) * radius,
         y: Math.sin(offset) * radius
     };
     const end = {
-        x: (radius + (Math.cos(degree + offset) * radius)).toFixed(10),
-        y: (radius + (Math.sin(degree + offset) * radius)).toFixed(10)
+        x: (radius + (Math.cos(angle + offset) * radius)).toFixed(10),
+        y: (radius + (Math.sin(angle + offset) * radius)).toFixed(10)
     };
-    const biggerThanHalf = degree > Math.PI ? 1 : 0;
+    const biggerThanHalf = angle > Math.PI ? 1 : 0;
 
     const d = `
         M${radius} ${radius} 
@@ -29,7 +30,7 @@ const CircleSector = ({radius, offset, degree, ...rest}: CircleSectorProps) => {
         L${radius} ${radius}
         Z`;
     
-    return (<path
+    return (<path 
         d={d}
         {...rest}
     />);
@@ -76,9 +77,16 @@ export const stringToColor = (key: string): string => {
 }
 
 export const PieChart = ({sectors, radius, ...rest}: PieChartProps) => {
+    const boxSize = {
+        width: 80,
+        height: 45
+    };
+    const boxOffset = radius * 0.75;
+    const [hover, setHover] = useState<string>(undefined);
     interface sectorProps {
         key: string;
         value: number;
+        percentage: number;
         offset: number;
         angle: number;
         color: string;
@@ -92,6 +100,7 @@ export const PieChart = ({sectors, radius, ...rest}: PieChartProps) => {
         sectorAnglesOffsets.push({
             key: key,
             value: value,
+            percentage: (value / total) * 100,
             offset: prevOffset,
             angle: angle,
             color: stringToColor(key)
@@ -99,14 +108,47 @@ export const PieChart = ({sectors, radius, ...rest}: PieChartProps) => {
         prevOffset += angle;
     }
 
-    return (<div className="pie-chart">
-        <svg height={(radius * 2)} width={(radius * 2)} xmlns="http://www.w3.org/2000.svg" {...rest}>
+    const highlightedSector = sectorAnglesOffsets.find((x) => x.key === hover);
+    const boxPosition = {
+        x: radius - (boxSize.width / 2) 
+            + Math.cos(
+                (highlightedSector?.offset ?? 0) + 
+                (highlightedSector?.angle ?? 0) / 2
+            ) * boxOffset,
+        y: radius - (boxSize.height / 2) 
+            + Math.sin(
+                (highlightedSector?.offset ?? 0) +
+                (highlightedSector?.angle ?? 0) / 2
+            ) * boxOffset
+    }
+
+    return (<div className="pie-chart"
+        onMouseLeave={() => setHover(undefined)}>
+        {
+            hover &&
+            <div className="info-box"
+                style={{
+                    left: boxPosition.x,
+                    top: boxPosition.y,
+                    width: `${boxSize.width}px`,
+                    height: `${boxSize.height}px`
+                }}>
+                <h1>{ hover }</h1>
+                <h3>€{ highlightedSector?.value }</h3>
+                <h3>{ highlightedSector.percentage.toFixed(2) }%</h3>
+            </div>
+        }
+        <svg height={(radius * 2)} width={(radius * 2)} 
+            xmlns="http://www.w3.org/2000.svg" {...rest}>
             { 
                 sectorAnglesOffsets.map(({key, offset, angle, color}) => 
                     <CircleSector key={key}
-                        fill={color} 
+                        onMouseOver={() => setHover(key)}
+                        fill={color}
+                        stroke="white"
+                        strokeWidth={hover === key ? "1px" : "0px"}
                         cx={radius} cy={radius} radius={radius} 
-                        offset={offset} degree={angle}/> ) 
+                        offset={offset} angle={angle}/> ) 
             }
         </svg>
         <div className="legend" style={{width: `${radius*2}px`}}>
