@@ -1,15 +1,11 @@
 package dailydashboard;
 
-
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import dailydashboard.Database.SQL;
-import dailydashboard.Models.Expense;
 import jakarta.annotation.PreDestroy;
 
 @SpringBootApplication

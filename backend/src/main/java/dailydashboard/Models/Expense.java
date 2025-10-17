@@ -49,6 +49,11 @@ public class Expense {
          this.id = Optional.empty();
     }
 
+    /**
+     * Initializes the Expense Model
+     * Creates the <code>expenses</code> table in SQLite, if the table has not yet existed
+     * @throws SQLException If an SQL Exception occurs
+     */
     public static void init() throws SQLException {
         Statement statement = SQL.getConnection().createStatement();
         statement.executeUpdate("CREATE TABLE IF NOT EXISTS expenses(" +
@@ -61,6 +66,12 @@ public class Expense {
         ")");
     }
 
+    /**
+     * Delete a row in <code>expenses</code> based of the specified id
+     * @param id ID of the row to delete
+     * @return Returns the row count of affected rows. Either (1) if the ID exists, otherwise (0).
+     * @throws SQLException
+     */
     public static int deleteById(int id) throws SQLException {
         Connection conn = SQL.getConnection();
         PreparedStatement query = conn.prepareStatement("DELETE FROM expenses WHERE id = ?");
@@ -70,6 +81,13 @@ public class Expense {
         return res;
     }
 
+    /**
+     * Get Summed Up Expenses per Category between Two Date Intervals
+     * @param start Start of the Interval (Inclusive)
+     * @param end End of the Interval (Inclusive)
+     * @return <code>HashMap<code> with Categories as Keys and Summed Up Expenses as Values
+     * @throws SQLException
+     */
     public static HashMap<String, Long> getPerCategory(Timestamp start, Timestamp end) throws SQLException {
         Connection conn = SQL.getConnection();
         PreparedStatement query = conn.prepareStatement(
@@ -91,6 +109,14 @@ public class Expense {
         return result;
     }
 
+    /**
+     * Get Paginated Expenses in the <code>expenses</code> SQLite Table.
+     * The values are ordered descending by its creation date.
+     * @param page Page Number
+     * @param size Size of Page
+     * @return List of Expenses
+     * @throws Exception If an Exception occurs
+     */
     public static ArrayList<Expense> getExpenses(int page, int size) throws Exception {
         int offset = page * size;
         
@@ -124,6 +150,10 @@ public class Expense {
         return paginatedExpenses;
     }
 
+    /**
+     * Inserts the Current Instance into SQLITE as a Row in the table <code>expenses</code>
+     * @throws Exception If the current instance has already been inserted as a row
+     */
     public void insert() throws Exception {
         if (id.isPresent()) {
             throw new Exception("Already inserted in the database");
@@ -152,9 +182,15 @@ public class Expense {
 
             this.createdAt = Optional.of(rs.getTimestamp("created_at"));
             this.modifiedAt = Optional.of(rs.getTimestamp("modified_at"));
+        } else {
+            throw new Exception("Error inserting row");
         }
     }
 
+    /**
+     * Converts the Current <code>Expense</code> Instance into JSON
+     * @return Current Instance as JSON with all Members
+     */
     @SuppressWarnings("unchecked")
     public JSONObject asJSON() {
         JSONObject obj = new JSONObject();
