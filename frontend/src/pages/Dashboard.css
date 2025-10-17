@@ -1,0 +1,39 @@
+.dashboard {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    flex-grow: 1;
+    gap: 0.5em;
+    width: calc(100% - 2em);
+    padding: 1em;
+}
+
+.dashboard > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    align-items: center;
+    border: 2px solid white;
+    border-radius: 1em;
+    flex-grow: 1;
+}
+
+.dashboard > div > h1 {
+    font-size: medium;
+}
+
+.expense-input {
+    background-color: #161616;
+    border: 2px solid white;
+    border-radius: 0.5em;
+    color: white;
+    padding: 1em;
+    font-size: large;
+    height: 1em;
+    margin: 3em;
+}
+
+.expense-input:focus {
+    outline: none;
+}
