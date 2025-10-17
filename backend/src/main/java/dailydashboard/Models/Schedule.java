@@ -1,6 +1,5 @@
 package dailydashboard.Models;
 
-import java.lang.foreign.Linker.Option;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
