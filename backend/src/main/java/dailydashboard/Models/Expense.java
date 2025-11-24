@@ -55,7 +55,8 @@ public class Expense {
      * @throws SQLException If an SQL Exception occurs
      */
     public static void init() throws SQLException {
-        Statement statement = SQL.getConnection().createStatement();
+        Connection conn = SQL.getConnection();
+        Statement statement = conn.createStatement();
         statement.executeUpdate("CREATE TABLE IF NOT EXISTS expenses(" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
             "amount BIGINT NOT NULL," +
@@ -64,6 +65,7 @@ public class Expense {
             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
             "modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
         ")");
+        conn.close();
     }
 
     /**
@@ -76,8 +78,8 @@ public class Expense {
         Connection conn = SQL.getConnection();
         PreparedStatement query = conn.prepareStatement("DELETE FROM expenses WHERE id = ?");
         query.setInt(1, id);
-
         int res = query.executeUpdate();
+        conn.close();
         return res;
     }
 
@@ -105,6 +107,7 @@ public class Expense {
             long amount = rs.getLong("amount");
             result.put(category, amount);
         }
+        conn.close();
         
         return result;
     }
@@ -146,6 +149,8 @@ public class Expense {
             );
             paginatedExpenses.add(exp);
         }
+        
+        conn.close();
 
         return paginatedExpenses;
     }
@@ -182,7 +187,9 @@ public class Expense {
 
             this.createdAt = Optional.of(rs.getTimestamp("created_at"));
             this.modifiedAt = Optional.of(rs.getTimestamp("modified_at"));
+            conn.close();
         } else {
+            conn.close();
             throw new Exception("Error inserting row");
         }
     }

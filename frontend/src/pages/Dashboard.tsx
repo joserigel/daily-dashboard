@@ -87,6 +87,7 @@ const Dashboard = () => {
         <div>
             <PieChart sectors={values} radius={150}/>
             <input type="text" value={expenseInput}
+                placeholder="amount category [description]"
                 onChange={(e) => setExpenseInput(e.target.value)}
                 onKeyDown={keyDownHandler}
                 className="expense-input"></input>

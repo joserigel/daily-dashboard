@@ -1,5 +1,6 @@
 package dailydashboard.Models;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,8 @@ public class Schedule {
      * @throws SQLException If an SQL Exception occurs
      */
     public static void init() throws SQLException {
-        Statement statement = SQL.getConnection().createStatement();
+        Connection conn = SQL.getConnection();
+        Statement statement = conn.createStatement();
         statement.executeUpdate("CREATE TABLE IF NOT EXISTS schedule(" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "start CHAR(8) NOT NULL, " + 
@@ -40,6 +42,7 @@ public class Schedule {
             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
             "modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP " +
         ")");
+        conn.close();
     }
 
     /**
@@ -49,7 +52,8 @@ public class Schedule {
      * @throws SQLException If an SQL Exception occurs
      */
     public static ArrayList<Schedule> getByDayOfWeek(DayOfWeek dayOfWeek) throws SQLException {
-        PreparedStatement preparedStatement = SQL.getConnection().prepareStatement(
+        Connection conn = SQL.getConnection();
+        PreparedStatement preparedStatement = conn.prepareStatement(
             "SELECT * FROM schedule WHERE day_of_week = ? ORDER BY start");
         preparedStatement.setByte(1, (byte)dayOfWeek.getValue());
     
@@ -69,6 +73,7 @@ public class Schedule {
                 id, start, end, day, description, createdAt, modifiedAt
             ));
         }
+        conn.close();
         return list;
     }
 
@@ -103,7 +108,8 @@ public class Schedule {
         if (this.id.isPresent()) {
             throw new Exception("Row is already inserted!");
         }
-        PreparedStatement statement = SQL.getConnection().prepareStatement(
+        Connection conn = SQL.getConnection();
+        PreparedStatement statement = conn.prepareStatement(
             "INSERT INTO schedule(start, end, day_of_week, description) VALUES(?, ?, ?, ?) " +
             "RETURNING *;"
         );
@@ -124,7 +130,9 @@ public class Schedule {
             this.description = rs.getString("description");
             this.createdAt = Optional.of(rs.getTimestamp("created_at"));
             this.modifiedAt = Optional.of(rs.getTimestamp("modified_at"));
+            conn.close();
         } else {
+            conn.close();
             throw new Exception("Error inserting row");
         }
     }
@@ -136,11 +144,13 @@ public class Schedule {
      * @throws SQLException
      */
     public static int deleteById(int id) throws SQLException {
-        PreparedStatement statement = SQL.getConnection().prepareStatement(
+        Connection conn = SQL.getConnection();
+        PreparedStatement statement = conn.prepareStatement(
             "DELETE FROM schedule WHERE id = ?"
         );
         statement.setInt(1, id);
         int res = statement.executeUpdate();
+        conn.close();
         return res;
     }
 

@@ -35,14 +35,4 @@ public class App
             logger.error(e.getMessage());
         }
     }
-
-    @PreDestroy
-    public static void destroy() {
-        try {
-            SQL.closeConnection();
-            logger.info("Closed SQL Connection");
-        } catch(Exception e) {
-            logger.error(e.getMessage());
-        }
-    }
 }
